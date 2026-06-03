@@ -9,6 +9,10 @@
   "categories": [
     "Other"
   ],
+  "publisher": "lukasolsen",
+  "repository": {
+    "url": "https://github.com/lukasolsen/markdown-technical-document"
+  },
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
