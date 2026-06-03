@@ -1,71 +1,119 @@
-# markdown-technical-document README
+# Markdown Technical Document
 
-This is the README for your extension "markdown-technical-document". After writing up a brief description, we recommend including the following sections.
+A VS Code extension for managing architecture decision records (ADRs), RFCs, and security advisories as markdown files with YAML frontmatter.
 
-## Features
+## Why
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Teams need a structured way to record decisions, proposals, and security findings. This extension creates well-formatted markdown documents with consistent frontmatter metadata, so you can track status, authors, and cross-references without fiddling with templates manually.
 
-For example if there is an image subfolder under your extension project workspace:
+## What it does
 
-\!\[feature X\]\(images/feature-x.png\)
+Three document types, each with its own template and numbering:
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- **ADR** (Architecture Decision Record) — numbered `ADR-001`, `ADR-002`, ...
+- **RFC** (Request for Comments) — numbered `RFC-001`, `RFC-002`, ...
+- **Security Advisory** — numbered `CVE-YYYY-NNNN`, based on the current year.
 
-## Requirements
+Documents are stored in a `.docs/` directory with type-specific subdirectories:
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+```
+.docs/
+├── adr/
+│   ├── ADR-001.md
+│   └── ADR-002.md
+├── rfc/
+│   └── RFC-001.md
+└── securityAdvisory/
+    └── CVE-2026-1001.md
+```
 
-## Extension Settings
+## Commands
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and type "Docs:":
 
-For example:
+| Command | What it does |
+|---|---|
+| **Docs: Create Document Template** | Creates a new `.md` file in the correct subdirectory |
+| **Docs: Insert Document Template** | Inserts boilerplate into the currently open file |
+| **Docs: Change Status** | Updates the `status` field in frontmatter |
+| **Docs: Add Author** | Appends an author to the `authors` array |
+| **Docs: Remove Author** | Removes an author from the `authors` array |
+| **Docs: Add Ticket** | Adds a ticket reference (e.g. `PROJ-1234`) |
+| **Docs: Add Related RFC** | Links an RFC reference to the current document |
+| **Docs: Supersede Document** | Marks the current document as superseded by another |
 
-This extension contributes the following settings:
+## Settings
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+Configure where documents are stored via `markdownTechnicalDocument.docsDir` in your workspace settings:
 
-## Known Issues
+```json
+{
+  "markdownTechnicalDocument.docsDir": {
+    "root": ".docs",
+    "adr": "adr",
+    "rfc": "rfc",
+    "securityAdvisory": "securityAdvisory"
+  }
+}
+```
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+All paths are relative to your workspace root. Change `root` to use a different top-level directory, or change individual subdirectory names to match your project's conventions.
 
-## Release Notes
+## Installation
 
-Users appreciate release notes as you update your extension.
+### From source
 
-### 1.0.0
+```bash
+git clone <repo-url>
+cd markdown-technical-document
+pnpm install
+pnpm run package
+```
 
-Initial release of ...
+Then in VS Code: **Extensions > ... > Install from VSIX** and pick the generated `.vsix` file from the project root.
 
-### 1.0.1
+### From marketplace
 
-Fixed issue #.
+Search for "Markdown Technical Document" in the VS Code extensions panel and click Install.
 
-### 1.1.0
+## Publishing to the VS Code Marketplace
 
-Added features X, Y, and Z.
+To publish this extension and install it from any machine:
 
----
+1. **Create a publisher account** at [https://marketplace.visualstudio.com/manage/createpublisher](https://marketplace.visualstudio.com/manage/createpublisher). You need a name (e.g. `your-publisher-id`) and a PAT (Personal Access Token) with **Marketplace > Manage** scope.
 
-## Following extension guidelines
+2. **Set the publisher in `package.json`** — add a top-level field:
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+   ```json
+   "publisher": "your-publisher-id"
+   ```
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+3. **Install vsce** (the publishing CLI):
 
-## Working with Markdown
+   ```bash
+   npm install -g @vscode/vsce
+   ```
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+4. **Package the extension**:
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+   ```bash
+   pnpm run package
+   vsce package
+   ```
 
-## For more information
+   This produces a `.vsix` file.
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+5. **Publish**:
 
-**Enjoy!**
+   ```bash
+   vsce publish
+   ```
+
+   You'll be prompted for your PAT (or set it via `VSCE_PAT` environment variable).
+
+6. **Install on your work computer** — once published, open VS Code, go to Extensions, search for "Markdown Technical Document", and click Install. It pulls directly from the marketplace.
+
+If you only need it on machines you control and don't want it public, you can skip the marketplace and instead:
+
+- Share the `.vsix` file directly, then install with: **Extensions > ... > Install from VSIX**
+- Or use a private feed (Azure Artifacts, GitHub Packages) with `vsce publish --source <feed-url>`
