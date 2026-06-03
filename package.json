@@ -1,0 +1,113 @@
+{
+  "name": "markdown-technical-document",
+  "displayName": "Markdown Technical Document",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.120.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Markdown Technical Document",
+      "properties": {
+        "markdownTechnicalDocument.docsDir": {
+          "type": "object",
+          "description": "Controls where generated document files are stored. Each property defines a directory name relative to the workspace root.",
+          "default": {
+            "root": ".docs",
+            "adr": "adr",
+            "rfc": "rfc",
+            "securityAdvisory": "securityAdvisory"
+          },
+          "properties": {
+            "root": {
+              "type": "string",
+              "description": "Root directory for all technical documents (relative to workspace root).",
+              "default": ".docs"
+            },
+            "adr": {
+              "type": "string",
+              "description": "Subdirectory for Architecture Decision Records inside the root docs directory.",
+              "default": "adr"
+            },
+            "rfc": {
+              "type": "string",
+              "description": "Subdirectory for Request for Comments documents inside the root docs directory.",
+              "default": "rfc"
+            },
+            "securityAdvisory": {
+              "type": "string",
+              "description": "Subdirectory for Security Advisory / CVE documents inside the root docs directory.",
+              "default": "securityAdvisory"
+            }
+          }
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "markdown-technical-document.createDocumentTemplate",
+        "title": "Docs: Create Document Template"
+      },
+      {
+        "command": "markdown-technical-document.insertDocumentTemplate",
+        "title": "Docs: Insert Document Template"
+      },
+      {
+        "command": "markdown-technical-document.changeStatus",
+        "title": "Docs: Change Status"
+      },
+      {
+        "command": "markdown-technical-document.addAuthor",
+        "title": "Docs: Add Author"
+      },
+      {
+        "command": "markdown-technical-document.removeAuthor",
+        "title": "Docs: Remove Author"
+      },
+      {
+        "command": "markdown-technical-document.addTicket",
+        "title": "Docs: Add Ticket"
+      },
+      {
+        "command": "markdown-technical-document.addRfc",
+        "title": "Docs: Add Related RFC"
+      },
+      {
+        "command": "markdown-technical-document.supersedeDocument",
+        "title": "Docs: Supersede Document"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run package",
+    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.120.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.56.1",
+    "eslint": "^9.39.3",
+    "esbuild": "^0.27.3",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
